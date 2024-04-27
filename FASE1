@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <cmath>
 
+
 using namespace std;
 
 void setCursorPosition(int x, int y) {
