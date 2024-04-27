@@ -5,14 +5,12 @@
 
 using namespace std;
 
-
-void gotoxy(int x, int y) {
+void setCursorPosition(int x, int y) {
     COORD coord;
     coord.X = x;
     coord.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-
 
 void clearScreen() {
     system("cls");
@@ -30,36 +28,35 @@ void drawTriangle(int baseLength, int height, int x, int y) {
     currentY = startY;
     for (int i = 0; i < height; ++i) {
         currentX = startX + i;
-        gotoxy(currentX, currentY);
+        setCursorPosition(currentX, currentY);
         cout << ".";
-        gotoxy(startX + height - 1, currentY);
+        setCursorPosition(startX + height - 1, currentY);
         cout << ".";
         --currentY;
     }
     currentX = startX;
     currentY = startY;
     for (int i = 0; i < baseLength; ++i) {
-        gotoxy(currentX, currentY);
+        setCursorPosition(currentX, currentY);
         cout << ".";
         ++currentX;
     }
 }
-
 
 void drawSquare(int sideLength, int x, int y) {
     int startX = x - sideLength / 2;
     int startY = y - sideLength / 2;
 
     for (int i = 0; i < sideLength; ++i) {
-        gotoxy(startX + i, startY);
+        setCursorPosition(startX + i, startY);
         cout << ".";
-        gotoxy(startX + i, startY + sideLength - 1);
+        setCursorPosition(startX + i, startY + sideLength - 1);
         cout << ".";
     }
     for (int i = 1; i < sideLength - 1; ++i) {
-        gotoxy(startX, startY + i);
+        setCursorPosition(startX, startY + i);
         cout << ".";
-        gotoxy(startX + sideLength - 1, startY + i);
+        setCursorPosition(startX + sideLength - 1, startY + i);
         cout << ".";
     }
 }
@@ -69,15 +66,15 @@ void drawRectangle(int width, int height, int x, int y) {
     int startY = y - height / 2;
 
     for (int i = 0; i < width; ++i) {
-        gotoxy(startX + i, startY);
+        setCursorPosition(startX + i, startY);
         cout << ".";
-        gotoxy(startX + i, startY + height - 1);
+        setCursorPosition(startX + i, startY + height - 1);
         cout << ".";
     }
     for (int i = 1; i < height - 1; ++i) {
-        gotoxy(startX, startY + i);
+        setCursorPosition(startX, startY + i);
         cout << ".";
-        gotoxy(startX + width - 1, startY + i);
+        setCursorPosition(startX + width - 1, startY + i);
         cout << ".";
     }
 }
@@ -89,7 +86,7 @@ void drawCircle(int radius, int x, int y) {
     for (int i = -radius; i <= radius; ++i) {
         for (int j = -radius; j <= radius; ++j) {
             if (abs(i * i + j * j - radius * radius) < radius) {
-                gotoxy(startX + j, startY + i);
+                setCursorPosition(startX + j, startY + i);
                 cout << ".";
             }
         }
@@ -108,13 +105,13 @@ int main() {
         clearScreen();
 
         if (!isKeyPressed(VK_F12)) {
-            gotoxy(0, 0);
-            cout << "Presione las flechas para mover el cursor." << endl;
-            cout << "Presione F12 para ver el menu." << endl;
+            setCursorPosition(0, 0);
+            cout << "Presione las flechas para mover el cursor." << endl << endl;
+            cout << "Presione F12 para ver el menu." << endl << endl;
             cout << "Presione Esc 2 veces para cerrar el programa." << endl;
             cout << endl;
 
-            gotoxy(x, y);
+            setCursorPosition(x, y);
             cout << ".";
         }
 
@@ -123,44 +120,44 @@ int main() {
             switch (keyPressed) {
                 case 72: // Flecha arriba
                     if (y > 0 && !isKeyPressed(VK_F12))
-                        y -= 1; // Mover hacia arriba
+                        y -= 1;
                     break;
                 case 80: // Flecha abajo
                     if (y < screenHeight - 1 && !isKeyPressed(VK_F12))
-                        y += 1; // Mover hacia abajo
+                        y += 1;
                     break;
                 case 75: // Flecha izquierda
                     if (x > 0 && !isKeyPressed(VK_F12))
-                        x -= 1; // Mover hacia la izquierda
+                        x -= 1;
                     break;
                 case 77: // Flecha derecha
                     if (x < screenWidth - 1 && !isKeyPressed(VK_F12))
-                        x += 1; // Mover hacia la derecha
+                        x += 1;
+                    break;
+                case 27: // Tecla Esc
+                    if (!isKeyPressed(VK_F12)) {
+                        x = screenWidth / 2;
+                        y = screenHeight / 2;
+                    }
                     break;
             }
         }
 
         if (isKeyPressed(VK_F12)) {
             clearScreen();
-            gotoxy(25, 0);
+            setCursorPosition(25, 0);
             cout << "MENU " << endl;
-            gotoxy(0, 2);
+            setCursorPosition(0, 2);
             cout << "F1: Triangulo " << endl;
-            gotoxy(15, 2);
+            setCursorPosition(15, 2);
             cout << "F2: Cuadrado" << endl;
-            gotoxy(35, 2);
+            setCursorPosition(35, 2);
             cout << "F3: Rectangulo" << endl;
-            gotoxy(55, 2);
+            setCursorPosition(55, 2);
             cout << "F4: Circulo" << endl;
 
             int menuX = 0;
             int menuY = 4;
-
-            CONSOLE_SCREEN_BUFFER_INFO originalCharInfo;
-            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &originalCharInfo);
-
-            gotoxy(menuX, menuY);
-            cout << ".";
 
             do {
                 if (_kbhit()) {
@@ -168,82 +165,69 @@ int main() {
                     switch (keyPressed) {
                         case 72: // Flecha arriba
                             if (menuY > 0)
-                                menuY -= 1; // Mover hacia arriba
+                                menuY -= 1;
                             break;
                         case 80: // Flecha abajo
                             if (menuY < screenHeight - 1)
-                                menuY += 1; // Mover hacia abajo
+                                menuY += 1;
                             break;
                         case 75: // Flecha izquierda
                             if (menuX > 0)
-                                menuX -= 1; // Mover hacia la izquierda
+                                menuX -= 1;
                             break;
                         case 77: // Flecha derecha
                             if (menuX < screenWidth - 1)
-                                menuX += 1; // Mover hacia la derecha
+                                menuX += 1;
                             break;
+                        case 27: // Tecla Esc
+                            keyPressed = VK_F12;
+                            break;
+                    }
+                    setCursorPosition(menuX, menuY);
+                    cout << " ";
+                }
 
-                            }
+                if (isKeyPressed(VK_F1)) {
+                    int baseLength, height;
+                    clearScreen();
+                    cout << "Ingrese la longitud de la base del triangulo: ";
+                    cin >> baseLength;
+                    cout << "Ingrese la altura del triangulo: ";
+                    cin >> height;
+                    drawTriangle(baseLength, height, x, y);
+                    keyPressed = _getch();
+                }
+                else if (isKeyPressed(VK_F2)) {
+                    int sideLength;
+                    clearScreen();
+                    cout << "Ingrese el lado del cuadrado: ";
+                    cin >> sideLength;
+                    drawSquare(sideLength, x, y);
+                    keyPressed = _getch();
+                }
+                else if (isKeyPressed(VK_F3)) {
+                    int width, height;
+                    clearScreen();
+                    cout << "Ingrese el ancho del rectangulo: ";
+                    cin >> width;
+                    cout << "Ingrese la altura del rectangulo: ";
+                    cin >> height;
+                    drawRectangle(width, height, x, y);
+                    keyPressed = _getch();
+                }
+                else if (isKeyPressed(VK_F4)) {
+                    int radius;
+                    clearScreen();
+                    cout << "Ingrese el radio del circulo: ";
+                    cin >> radius;
+                    drawCircle(radius, x, y);
+                    keyPressed = _getch();
+                }
+            } while (keyPressed != VK_F12);
+        }
 
-                            gotoxy(menuX, menuY);
-                            cout << " ";
-                            }
+        Sleep(50);
+    } while (keyPressed != 27);
 
-                        if (isKeyPressed(VK_F1)) {
-                            int baseLength, height;
-                            clearScreen();
-                            cout << "Ingrese la longitud de la base del triángulo: ";
-                            cin >> baseLength;
-                            cout << "Ingrese la altura del triángulo: ";
-                            cin >> height;
-                            int prevX = x;
-                            int prevY = y;
-                            drawTriangle(baseLength, height, x, y);
-                            gotoxy(prevX, prevY);
-                            keyPressed = _getch();
-                            }
-                        else if (isKeyPressed(VK_F2)) {
-                            int sideLength;
-                            clearScreen();
-                            cout << "Ingrese el lado del cuadrado: ";
-                            cin >> sideLength;
-                            int prevX = x;
-                            int prevY = y;
-                            drawSquare(sideLength, x, y);
-                            gotoxy(prevX, prevY);
-                            keyPressed = _getch();
-                            }
-                        else if (isKeyPressed(VK_F3)) {
-                            int width, height;
-                            clearScreen();
-                            cout << "Ingrese el ancho del rectángulo: ";
-                            cin >> width;
-                            cout << "Ingrese la altura del rectángulo: ";
-                            cin >> height;
-                            int prevX = x;
-                            int prevY = y;
-                            drawRectangle(width, height, x, y);
-                            gotoxy(prevX, prevY);
-                            keyPressed = _getch();
-                            }
-                        else if (isKeyPressed(VK_F4)) {
-                            int radius;
-                            clearScreen();
-                            cout << "Ingrese el radio del círculo: ";
-                            cin >> radius;
-                            int prevX = x;
-                            int prevY = y;
-                            drawCircle(radius, x, y);
-                            gotoxy(prevX, prevY);
-                            keyPressed = _getch();
-                            }
-                                }
-                        while (keyPressed != VK_F12);
-                                    }
-
-                            Sleep(50);
-                            }
-                        while (keyPressed != 27);
-
-                        return 0;
+    return 0;
 }
