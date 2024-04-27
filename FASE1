@@ -226,7 +226,7 @@ int main() {
             } while (keyPressed != VK_F12);
         }
 
-        Sleep(50);
+        Sleep(20);
     } while (keyPressed != 27);
 
     return 0;
