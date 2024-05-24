@@ -3,7 +3,6 @@
 #include <windows.h>
 #include <cmath>
 
-
 using namespace std;
 
 void setCursorPosition(int x, int y) {
@@ -20,6 +19,23 @@ void clearScreen() {
 bool isKeyPressed(int key) {
     return GetAsyncKeyState(key) & 0x8000;
 }
+
+void drawHexagon(int sideLength, int x, int y) {
+    int startX = x;
+    int startY = y;
+
+    for (int i = 0; i < 6; ++i) {
+        int nextX = startX + sideLength * cos((i * 60) * 3.14159 / 180);
+        int nextY = startY + sideLength * sin((i * 60) * 3.14159 / 180);
+        int nextX2 = startX + sideLength * cos(((i + 1) * 60) * 3.14159 / 180);
+        int nextY2 = startY + sideLength * sin(((i + 1) * 60) * 3.14159 / 180);
+        setCursorPosition(nextX, nextY);
+        cout << ".";
+        setCursorPosition(nextX2, nextY2);
+        cout << ".";
+    }
+}
+
 
 void drawTriangle(int baseLength, int height, int x, int y) {
     int startX = x - baseLength / 2;
@@ -94,6 +110,48 @@ void drawCircle(int radius, int x, int y) {
     }
 }
 
+void drawLine(int length, const string& orientation, int x, int y) {
+    int startX = x;
+    int startY = y;
+
+    if (orientation == "horizontal") {
+        for (int i = 0; i < length; ++i) {
+            setCursorPosition(startX + i, startY);
+            cout << ".";
+        }
+    } else if (orientation == "vertical") {
+        for (int i = 0; i < length; ++i) {
+            setCursorPosition(startX, startY + i);
+            cout << ".";
+        }
+    } else if (orientation == "diagonal") {
+        for (int i = 0; i < length; ++i) {
+            setCursorPosition(startX + i, startY + i);
+            cout << ".";
+        }
+    }
+}
+
+void drawDiamond(int sideLength, int x, int y) {
+    int startX = x;
+    int startY = y;
+
+    for (int i = 0; i <= sideLength; ++i) {
+        setCursorPosition(startX - i, startY);
+        cout << ".";
+        setCursorPosition(startX + i, startY);
+        cout << ".";
+    }
+    for (int i = sideLength - 1; i >= 0; --i) {
+        setCursorPosition(startX - i, startY);
+        cout << ".";
+        setCursorPosition(startX + i, startY);
+        cout << ".";
+        --startY; // Moving one row up for each iteration
+    }
+}
+
+
 int main() {
     int screenWidth = 80;
     int screenHeight = 25;
@@ -141,6 +199,9 @@ int main() {
                         y = screenHeight / 2;
                     }
                     break;
+                case 120: // Tecla F9
+                    clearScreen();
+                    break;
             }
         }
 
@@ -156,6 +217,12 @@ int main() {
             cout << "F3: Rectangulo" << endl;
             setCursorPosition(55, 2);
             cout << "F4: Circulo" << endl;
+            setCursorPosition(70, 2);
+            cout << "F5: Linea" << endl;
+            setCursorPosition(0, 3);
+            cout << "F6: Rombo" << endl;
+            setCursorPosition(15, 3);
+            cout << "F7: Hexagono" << endl;
 
             int menuX = 0;
             int menuY = 4;
@@ -222,6 +289,33 @@ int main() {
                     cout << "Ingrese el radio del circulo: ";
                     cin >> radius;
                     drawCircle(radius, x, y);
+                    keyPressed = _getch();
+                }
+                else if (isKeyPressed(VK_F5)) {
+                    int length;
+                    string orientation;
+                    clearScreen();
+                    cout << "Ingrese la longitud de la línea: ";
+                    cin >> length;
+                    cout << "Ingrese la orientación (horizontal/vertical/diagonal): ";
+                    cin >> orientation;
+                    drawLine(length, orientation, x, y);
+                    keyPressed = _getch();
+                }
+                if (isKeyPressed(VK_F6)) {
+                    int sideLength;
+                    clearScreen();
+                    cout << "Ingrese la longitud de un lado del rombo: ";
+                    cin >> sideLength;
+                    drawDiamond(sideLength, x, y);
+                    keyPressed = _getch();
+                }
+                else if (isKeyPressed(VK_F7)) {
+                    int sideLength;
+                    clearScreen();
+                    cout << "Ingrese la longitud de un lado del hexagono: ";
+                    cin >> sideLength;
+                    drawHexagon(sideLength, x, y);
                     keyPressed = _getch();
                 }
             } while (keyPressed != VK_F12);
